@@ -75,14 +75,32 @@
           </bn-card-body>
         </bn-card>
 
-        <bn-card class="trade_table__cell col-lg-4">
+        <bn-card class="trade_table__cell col-lg-4" >
           <bn-card-toolbar>
             <ng-template #toolbar>
-              <bn-select class="compact"
-                [options]="decimalOptions"
-                [initialSelectedIndex]="initialDecimalIdx"
-                (onSelectChange)="setPriceDecimal($event)">
-              </bn-select>
+              <div class="order-book-view-wrapper">
+                <div class="showbuyorsell view-all-orders" [class.active]="viewAllOrders" title="Show buy & sell orders" (click)="updateView('all')">
+                  <div class="sell"></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div class="buy"></div>
+                </div>
+                <div class="showbuyorsell view-sell-orders" [class.active]="viewSellOrders" title="Show only sell orders" (click)="updateView('sells')">
+                  <div class="sell"></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <div class="showbuyorsell view-buy-orders" [class.active]="viewBuyOrders" title="Show only buy orders" (click)="updateView('buys')">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div class="buy"></div>
+                </div>
+              </div>
             </ng-template>
           </bn-card-toolbar>
           <bn-card-title>
@@ -91,7 +109,7 @@
             </span>
           </bn-card-title>
           <bn-card-body>
-            <app-orderbook></app-orderbook>
+            <app-orderbook [showAllOrders]="viewAllOrders" [showSellOrders]="viewSellOrders" [showBuyOrders]="viewBuyOrders"></app-orderbook>
           </bn-card-body>
         </bn-card>
 
