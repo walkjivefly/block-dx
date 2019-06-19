@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Component, NgZone, OnInit, Input, ViewChild} from '@angular/core';
 import 'rxjs/add/operator/map';
 import * as math from 'mathjs';
 
@@ -44,6 +44,10 @@ export class OrderbookComponent implements OnInit {
   public pricingEnabled = false;
 
   public ownOrders = new Set();
+
+  @Input() showAllOrders = true;
+  @Input() showSellOrders = false;
+  @Input() showBuyOrders = false;
 
   constructor(
     private appService: AppService,
