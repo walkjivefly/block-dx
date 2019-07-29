@@ -21,9 +21,9 @@ export class BalancesService {
         let wallet;
         let preppedBalances = balances
           .filter(c => {
-            if (c.coin === 'Wallet')
+            if (c.coin === 'Blocknet Wallet')
               wallet = c;
-            return c.coin !== 'Wallet';
+            return c.coin !== 'Blocknet Wallet';
           })
           .sort((a, b) => a.coin.localeCompare(b.coin));
 
