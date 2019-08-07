@@ -11,6 +11,8 @@ import { BlockCurrencyPipe } from './block-currency.pipe';
 import { PricingService } from './pricing.service';
 import { Pricing } from './pricing';
 import {ConfigurationOverlayService} from './configuration.overlay.service';
+import {OrderbookViewService} from './orderbook.view.service';
+import { OrderbookViews } from './enums';
 
 
 math.config({
@@ -48,9 +50,9 @@ export class OrderbookComponent implements OnInit {
 
   public showConfigurationOverlay = false;
 
-  @Input() showAllOrders = true;
-  @Input() showSellOrders = false;
-  @Input() showBuyOrders = false;
+  public showAllOrders: boolean;
+  public showSellOrders: boolean;
+  public showBuyOrders: boolean;
 
   constructor(
     private appService: AppService,
@@ -60,10 +62,53 @@ export class OrderbookComponent implements OnInit {
     private openorderService: OpenordersService,
     private pricingService: PricingService,
     private configurationOverlayService: ConfigurationOverlayService,
-    // private tradehistoryService: TradehistoryService,
-    // private currentpriceService: CurrentpriceService,
+    private orderbookViewService: OrderbookViewService,
     private zone: NgZone
-  ) { }
+  ) {
+    this.orderbookViewService.orderbookView()
+      .subscribe(view => {
+        if(!this.showAllOrders && !this.showSellOrders && !this.showBuyOrders) {
+          // First time
+          this.setView(view);
+        } else {
+          // Subsequent changes, after view has been rendered
+          this.zone.run(() => {
+            this.setView(view, true);
+          });
+        }
+      });
+  }
+
+  private setView(view, scroll = false) {
+    switch(view) {
+      case OrderbookViews.SELLS:
+        Object.assign(this, {
+          showAllOrders: false,
+          showSellOrders: true,
+          showBuyOrders: false
+        });
+        break;
+      case OrderbookViews.BUYS:
+        Object.assign(this, {
+          showAllOrders: false,
+          showSellOrders: false,
+          showBuyOrders: true
+        });
+        break;
+      default:
+        Object.assign(this, {
+          showAllOrders: true,
+          showSellOrders: false,
+          showBuyOrders: false
+        });
+    }
+    if(scroll) {
+      setTimeout(() => {
+        this.orderbookTopTable.scrollToBottom(true);
+        this.orderbookBottomTable.scrollToTop(true);
+      }, 0);
+    }
+  }
 
   static calculateTotal(row) {
     return math.round(math.multiply(bignumber(row[1]), bignumber(row[0])), 6);

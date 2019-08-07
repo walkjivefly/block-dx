@@ -94,7 +94,7 @@
     <div *ngIf="sections[1].rows.length === 0" class="no-open-orders-message-bottom">No buy orders.</div>
 
     <div class="orderbook-table-container">
-      <app-table #orderbookTopTable
+      <app-table #orderbookBottomTable
                  [hideHeader]="true"
                  [selectable]="true"
                  [sections]="sections ? [sections[1]] : [{}]"

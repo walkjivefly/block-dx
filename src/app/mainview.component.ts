@@ -6,6 +6,8 @@ import { PricingService } from './pricing.service';
 import { OrderbookService } from './orderbook.service';
 import { OrderbookComponent } from './orderbook.component';
 import { BigTooltipComponent } from './big-tooltip/big-tooltip.component';
+import {OrderbookViewService} from './orderbook.view.service';
+import { OrderbookViews } from './enums';
 
 @Component({
   selector: 'app-mainview',
@@ -20,9 +22,8 @@ export class MainviewComponent implements OnInit {
   public decimalOptions: any[];
   public initialDecimalIdx: number;
   public pricingEnabled = false;
-  public viewAllOrders = true;
-  public viewSellOrders = false;
-  public viewBuyOrders = false;
+
+  public OrderbookViews = OrderbookViews;
 
   public showBalancesTooltip = false;
   public showOrderFormTooltip = false;
@@ -33,6 +34,7 @@ export class MainviewComponent implements OnInit {
     private appService: AppService,
     private orderbookService: OrderbookService,
     private pricingService: PricingService,
+    private orderbookViewService: OrderbookViewService,
     private zone: NgZone
   ) {
     this.decimalOptions = [
@@ -74,27 +76,7 @@ export class MainviewComponent implements OnInit {
   }
 
   updateView(view) {
-    //let sellOrderSection = document.querySelector(".orderbook-table-outer-container-top .ps") as HTMLElement;
-    //let buyOrderSection = document.querySelector(".orderbook-table-outer-container-bottom .ps") as HTMLElement;
-    this.viewAllOrders = false;
-    this.viewSellOrders = false;
-    this.viewBuyOrders = false;
-    switch(view) {
-      case "sells":
-        this.viewSellOrders = true
-        //this.orderbookTopTable.scrollToBottom();
-        break;
-      case "buys":
-        this.viewBuyOrders = true
-        //this.orderbookBottomTable.scrollToTop();
-        break;
-      default:
-        //view both buys and sells
-        this.viewAllOrders = true;
-        //this.orderbookTopTable.scrollToBottom();
-        //this.orderbookBottomTable.scrollToTop();
-        break;
-    }
+    this.orderbookViewService.orderbookView().next(view);
   }
 
 }
