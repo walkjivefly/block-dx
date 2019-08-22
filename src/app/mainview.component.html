@@ -33,7 +33,7 @@
     <div class="sidebar col-lg">
       <div class="trade_table row">
 
-          <bn-card class="trade_table__cell balances col-lg-12" [class.alternate-pricing]="pricingEnabled" [allowFullscreen]="false" [showRefreshBalances]="true">
+          <bn-card class="trade_table__cell balances col-lg-12" [class.alternate-pricing]="pricingEnabled && !shouldHidePricing(symbols)" [allowFullscreen]="false" [showRefreshBalances]="true">
             <bn-card-title>
               <span>Balances
                 <i class="material-icons tooltip-icon" (mouseenter)="balancesTooltip(true)" (mouseleave)="balancesTooltip(false)">help</i>
@@ -44,7 +44,7 @@
             </bn-card-body>
           </bn-card>
 
-          <bn-card class="trade_table__cell orderform col-lg-12" [class.alternate-pricing]="pricingEnabled" [allowFullscreen]="false">
+          <bn-card class="trade_table__cell orderform col-lg-12" [class.alternate-pricing]="pricingEnabled && !shouldHidePricing(symbols)" [allowFullscreen]="false">
             <bn-card-title>
               <span>Order Form
                 <i class="material-icons tooltip-icon" (mouseenter)="orderFormTooltip(true)" (mouseleave)="orderFormTooltip(false)">help</i>

@@ -13,6 +13,7 @@ import { Pricing } from './pricing';
 import {ConfigurationOverlayService} from './configuration.overlay.service';
 import {OrderbookViewService} from './orderbook.view.service';
 import { OrderbookViews } from './enums';
+import { shouldHidePricing } from './util';
 
 
 math.config({
@@ -50,9 +51,11 @@ export class OrderbookComponent implements OnInit {
 
   public showConfigurationOverlay = false;
 
+
   public showAllOrders: boolean;
   public showSellOrders: boolean;
   public showBuyOrders: boolean;
+  shouldHidePricing = shouldHidePricing;
 
   constructor(
     private appService: AppService,

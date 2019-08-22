@@ -8,6 +8,7 @@ import { OrderbookComponent } from './orderbook.component';
 import { BigTooltipComponent } from './big-tooltip/big-tooltip.component';
 import {OrderbookViewService} from './orderbook.view.service';
 import { OrderbookViews } from './enums';
+import { shouldHidePricing } from './util';
 
 @Component({
   selector: 'app-mainview',
@@ -22,12 +23,15 @@ export class MainviewComponent implements OnInit {
   public decimalOptions: any[];
   public initialDecimalIdx: number;
   public pricingEnabled = false;
+  public symbols:string[] = [];
 
   public OrderbookViews = OrderbookViews;
 
   public showBalancesTooltip = false;
   public showOrderFormTooltip = false;
   public showOrderBookTooltip = false;
+
+  shouldHidePricing = shouldHidePricing;
 
   constructor(
     private route: ActivatedRoute,
@@ -52,6 +56,9 @@ export class MainviewComponent implements OnInit {
       this.zone.run(() => {
         this.pricingEnabled = enabled;
       });
+    });
+    this.appService.marketPairChanges.subscribe((symbols) => {
+      this.symbols = symbols;
     });
   }
 
