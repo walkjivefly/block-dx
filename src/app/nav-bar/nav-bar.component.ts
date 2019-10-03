@@ -4,6 +4,7 @@ import { AppService } from '../app.service';
 import { Currentprice } from '../currentprice';
 import { CurrentpriceService } from '../currentprice.service';
 import {NumberFormatPipe} from '../pipes/decimal.pipe';
+import {Localize} from '../localize/localize.component';
 
 @Component({
   selector: 'app-nav-bar',
@@ -12,6 +13,9 @@ import {NumberFormatPipe} from '../pipes/decimal.pipe';
   encapsulation: ViewEncapsulation.None
 })
 export class NavBarComponent implements OnInit {
+
+  private context = 'navbar';
+
   public symbols: string[];
   public currentPrice: Currentprice;
 
@@ -20,6 +24,8 @@ export class NavBarComponent implements OnInit {
 
   public appName: string;
   public appVersion: string;
+
+  public Localize = Localize;
 
   constructor(
     private appService: AppService,

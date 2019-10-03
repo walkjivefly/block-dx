@@ -13,6 +13,8 @@ const _ = require('lodash');
 const math = require('mathjs');
 const MarkdownIt = require('markdown-it');
 
+const defaultLocale = 'en';
+
 math.config({
   number: 'BigNumber',
   precision: 64
@@ -1353,6 +1355,28 @@ ipcMain.on('loadXBridgeConf', async function() {
   }
 });
 
+ipcMain.on('setUserLocale', (e, locale) => {
+  storage.setItem('locale', locale, true);
+  app.relaunch();
+  app.quit();
+});
+ipcMain.on('getUserLocale', e => {
+  e.returnValue = storage.getItem('locale');
+});
+ipcMain.on('getLocaleData', e => {
+  const locale = storage.getItem('locale');
+  const localesPath = path.join(__dirname, 'locales');
+  const files = fs.readdirSync(localesPath);
+  const localeFileName = `${locale}.json`;
+  let data;
+  if(files.includes(localeFileName)) {
+    data = fs.readJsonSync(path.join(localesPath, localeFileName));
+  } else {
+    data = fs.readJsonSync(path.join(localesPath, `${defaultLocale}.json`));
+  }
+  e.returnValue = data;
+});
+
 const checkForUpdates = async function() {
   try {
     await new Promise(resolve => setTimeout(resolve, 3000));
@@ -1394,6 +1418,9 @@ const onReady = new Promise(resolve => app.on('ready', resolve));
     password = storage.getItem('password');
     port = storage.getItem('port');
     let ip = storage.getItem('blocknetIP');
+
+    const locale = storage.getItem('locale');
+    if(!locale) storage.setItem('locale', defaultLocale);
 
     pricingSource = storage.getItem('pricingSource');
     if(!pricingSource) {

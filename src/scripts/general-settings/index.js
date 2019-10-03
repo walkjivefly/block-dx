@@ -1,10 +1,11 @@
 /* global $, swal */
 
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, remote } = require('electron');
 
 const renderSidebar = require('./modules/sidebar');
 const renderPricing = require('./modules/pricing');
 const renderBalances = require('./modules/balances');
+const renderLocalization = require('./modules/localization');
 const renderLayout = require('./modules/layout');
 
 const handleError = err => {
@@ -29,12 +30,17 @@ const state = {
 
 };
 
-
+state.set('locale', ipcRenderer.sendSync('getUserLocale'));
+state.set('locales', [
+  ['en', 'English']
+  // ['de', 'Deutsch']
+]);
 state.set('active', 0);
 state.set('sidebarSelected', 0);
 state.set('sidebarItems', [
   {sidebarText: 'Market Pricing', title: 'MARKET PRICING'},
-  {sidebarText: 'Balances', title: 'BALANCES'}
+  {sidebarText: 'Balances', title: 'BALANCES'},
+  {sidebarText: 'Language', title: 'LANGUAGE'}
   // {sidebarText: 'Layout Options', title: 'LAYOUT OPTIONS'}
 ]);
 
@@ -87,6 +93,9 @@ $(document).ready(() => {
         break;
       case 1:
         mainHTML = renderBalances({ state });
+        break;
+      case 2:
+        mainHTML = renderLocalization({ state });
         break;
       default:
         mainHTML = '';
@@ -365,6 +374,49 @@ $(document).ready(() => {
                 $($target.find('div')[0]).text(newShowWallet ? 'Yes' : 'No');
                 state.set('showWallet', newShowWallet);
                 saveSettings();
+              });
+          }, 0);
+        });
+
+      $('#js-selectLocaleDropdown')
+        .off('click')
+        .on('click', e => {
+          e.preventDefault();
+          const $target = $(e.currentTarget);
+          const $icon = $target.find('i');
+          const height = $target.outerHeight();
+          const width = $target.outerWidth();
+          const locales = state.get('locales');
+          if ($icon.hasClass('fa-angle-up')) {
+            closeDropdowns();
+            return;
+          }
+          $icon.addClass('fa-angle-up');
+          $icon.removeClass('fa-angle-down');
+          $target.append(`
+            <div class="js-dropdownMenu" style="z-index:1000;position:absolute;top:${height}px;left:0;background-color:#ddd;width:${width}px;max-height:162px;overflow-y:auto;">
+              ${locales.map(([code, name]) => `<div class="js-dropdownMenuItem dropdown-button" data-locale="${code}"><div>${code} - ${name}</div></div>`).join('')}
+            </div>
+          `);
+          setTimeout(() => {
+            $('.js-dropdownMenuItem')
+              .off('click')
+              .on('click', async function(ee) {
+                ee.preventDefault();
+                const value = $(ee.currentTarget).attr('data-locale');
+                const selected = locales.find(([code]) => code === value);
+                const confirmed = await remote.dialog.showMessageBox({
+                  type: 'warning',
+                  message: `In order to change the language to ${selected[1]}, Block DX must restart. Do you want to continue?`,
+                  buttons: [
+                    'Cancel',
+                    'OK'
+                  ]
+                });
+                if(!confirmed) return;
+                $($target.find('div')[0]).text(selected[0] + ' - ' + selected[1]);
+                state.set('locale', value);
+                ipcRenderer.send('setUserLocale', value);
               });
           }, 0);
         });
